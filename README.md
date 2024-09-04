@@ -4,3 +4,5 @@ Repositorio de proyecto de aplicaciones de la analitica
 Integrantes:
 - Juan Diego Arroyave Murillo
 - Sebastián Sánchez Álvarez
+- Estefanía Dussan Dussan
+- Alejandro Álvarez López
