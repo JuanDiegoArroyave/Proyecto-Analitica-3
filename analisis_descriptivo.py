@@ -6,7 +6,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 # cargar datos de un archivo de excel
-df = pd.read_excel('C:\\Users\\amqj1\\OneDrive\\Escritorio\\Codigos JD\\Analitica III\\Proyecto-Analitica-3\\data\\base_modelo_2.xlsx') # Cambiar ruta a segun
+df = pd.read_excel(r'C:\Users\alejo\OneDrive\Documentos\Analítica-3\Repos\Recursos_humanos_git\Proyecto-Analitica-3\data\base_modelo_2.xlsx') # Cambiar ruta a segun
 df.head(5)
 
 # Se reemplaza en la var respuesta Attrition los valores de Yes por 1 y NaN por 0
@@ -71,3 +71,6 @@ cuan_cols = [col for col in df.columns if df[col].dtypes in ["int64", "float64"]
             and col!='Attrition']
 for col in cuan_cols:
     bivariado(df, col)
+
+
+df.to_excel(r'C:\Users\alejo\OneDrive\Documentos\Analítica-3\Repos\Recursos_humanos_git\Proyecto-Analitica-3\data\base_modelo_final.xlsx', index=False)
