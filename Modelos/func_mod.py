@@ -7,6 +7,13 @@ from sklearn.feature_selection import SelectFromModel
 from sklearn.model_selection import cross_val_predict, cross_val_score, cross_validate
 import joblib
 from sklearn.preprocessing import StandardScaler ## escalar variables 
+import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import precision_score, recall_score, f1_score, average_precision_score
+from sklearn.model_selection import train_test_split
+from imblearn.over_sampling import SMOTE
+from sklearn.pipeline import Pipeline
+
 ####Este archivo contienen funciones utiles a utilizar en diferentes momentos del proyecto
 
 ###########Esta función permite ejecutar un archivo  con extensión .sql que contenga varias consultas
@@ -102,3 +109,100 @@ def preparar_datos (df):
     
     
     return X
+
+# Función para calcular el AUCPR (Área bajo la curva de Precision-Recall)
+def calculate_aucpr(y_true, y_scores):
+    return average_precision_score(y_true, y_scores)
+
+# Función para realizar el modelo con balanceo (oversampling) y calcular las métricas
+def evaluate_model_with_oversampling(X, y, oversample_ratios):
+    results = []  # Para almacenar las métricas
+    # Dividimos los datos en entrenamiento y prueba
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+    # Iteramos sobre los diferentes oversampling ratios (usando SMOTE)
+    for over_ratio in oversample_ratios:
+        try:
+            # Definimos el oversampling SMOTE
+            oversample = SMOTE(sampling_strategy=over_ratio, random_state=42)
+
+            # Aplicamos SMOTE en los datos de entrenamiento
+            X_train_resampled, y_train_resampled = oversample.fit_resample(X_train, y_train)
+
+            # Definimos el clasificador RandomForest
+            classifier = RandomForestClassifier(n_estimators=10, max_depth=5, random_state=42)
+            
+            # Entrenamos el modelo
+            classifier.fit(X_train_resampled, y_train_resampled)
+
+            # Hacemos las predicciones
+            y_pred = classifier.predict(X_test)
+            y_scores = classifier.predict_proba(X_test)[:, 1]  # Probabilidades para AUCPR
+
+            # Calculamos las métricas
+            precision = precision_score(y_test, y_pred)
+            recall = recall_score(y_test, y_pred)
+            f1 = f1_score(y_test, y_pred)
+            aucpr = calculate_aucpr(y_test, y_scores)
+
+            # Guardamos los resultados en un diccionario
+            results.append({
+                'oversample_ratio': over_ratio,
+                'precision': precision,
+                'recall': recall,
+                'f1': f1,
+                'aucpr': aucpr
+            })
+
+        except ValueError as e:
+            print(f"Error with oversample_ratio {over_ratio}: {e}")
+            continue
+
+    # Convertimos los resultados en un DataFrame
+    results_df = pd.DataFrame(results)
+    return results_df
+
+from sklearn.model_selection import GridSearchCV
+
+def evaluate_rf_hyperparameters(X, y, param_grid):
+    # Dividimos los datos en entrenamiento y prueba
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+    
+    # Definimos el modelo base (Random Forest)
+    rf = RandomForestClassifier(random_state=42)
+    
+    # Definimos la búsqueda de hiperparámetros con GridSearchCV
+    grid_search = GridSearchCV(estimator=rf, param_grid=param_grid, 
+                               scoring='average_precision',  # AUCPR como métrica
+                               cv=5,  # Validación cruzada con 5 particiones
+                               n_jobs=-1,  # Paralelización
+                               verbose=2)
+
+    # Ajustamos el modelo con las combinaciones de hiperparámetros
+    grid_search.fit(X_train, y_train)
+
+    # Recuperamos el mejor modelo
+    best_model = grid_search.best_estimator_
+    
+    # Hacemos predicciones sobre los datos de prueba
+    y_pred = best_model.predict(X_test)
+    y_scores = best_model.predict_proba(X_test)[:, 1]
+
+    # Calculamos las métricas
+    precision = precision_score(y_test, y_pred)
+    recall = recall_score(y_test, y_pred)
+    f1 = f1_score(y_test, y_pred)
+    aucpr = average_precision_score(y_test, y_scores)
+
+    # Guardamos los resultados
+    results = {
+        'best_params': grid_search.best_params_,
+        'precision': precision,
+        'recall': recall,
+        'f1': f1,
+        'aucpr': aucpr
+    }
+    
+    # Convertimos los resultados en un DataFrame
+    results_df = pd.DataFrame([results])
+    return results_df, best_model
