@@ -50,7 +50,8 @@ WHERE SUBSTR(retirementDate, 1, 4) = '2016';
 
 
 ---------------
------- Se crea tabla base para el modelo, ésta contiene la información general de los empleados en 2015, junto a la encuesta de desempeño, encuesta de satisfacción y variable respuesta
+------ Se crea tabla base para el modelo, ésta contiene la información general de los empleados en 2015, 
+------ junto a la encuesta de desempeño, encuesta de satisfacción y variable respuesta
 
 ---------------
 
