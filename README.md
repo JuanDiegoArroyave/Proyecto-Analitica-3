@@ -1,5 +1,5 @@
 # Proyecto-Analitica-3
-Repositorio de proyecto de aplicaciones de la analitica
+Repositorio de proyecto de aplicaciones de la Analítica (Recursos Humanos)
 
 Integrantes:
 - Juan Diego Arroyave Murillo
