@@ -19,6 +19,11 @@ from surprise.model_selection import train_test_split
 
 
 
+conn = sql.connect(r'C:\Users\alejo\OneDrive\Documentos\Analítica-3\Repos\Recursos_humanos_git\Proyecto-Analitica-3\2. Data\db_movies')
+cur=conn.cursor()
+
+cur.execute("SELECT name FROM sqlite_master where type='table' ")
+cur.fetchall()
 
 ### datos originales en pandas
 ## knn solo sirve para calificaciones explicitas
