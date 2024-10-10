@@ -6,7 +6,7 @@ from sklearn.neighbors import NearestNeighbors
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 
 # Conexión a la base de datos
-conn = sql.connect(r'C:\Users\alejo\OneDrive\Documentos\Analítica-3\Repos\Recursos_humanos_git\Proyecto-Analitica-3\2. Data\db_movies')
+conn = sql.connect(r'C:\Users\amqj1\OneDrive\Escritorio\Codigos JD\Analitica III\Marketing\Proyecto-Analitica-3\2. Data\db_movies')
 cur=conn.cursor()
 
 cur.execute("SELECT name FROM sqlite_master where type='table' ")
@@ -77,15 +77,15 @@ def recomendaciones(user_id, n_recomend=10):
     distances, indices = best_model.kneighbors(user_vector, n_neighbors=n_recomend)
 
     # Obtener los libros recomendados
-    recommended_books_indices = indices.flatten()
-    recommended_books = X_train.columns[recommended_books_indices].tolist()
+    recommended_movies_indices = indices.flatten()
+    recommended_movies = X_train.columns[recommended_movies_indices].tolist()
     
-    return recommended_books
+    return recommended_movies
 
-# Obtener recomendaciones para un usuario específico
-user_id = 24  # Cambia este ID según sea necesario
-recommended_books = recomendaciones(user_id=user_id, n_recomend=10)
-print(f"Recomendaciones para el usuario {user_id}: {recommended_books}")
+# # Obtener recomendaciones para un usuario específico
+# user_id = 24  # Cambia este ID según sea necesario
+# recommended_movies = recomendaciones(user_id=user_id, n_recomend=10)
+# print(f"Recomendaciones para el usuario {user_id}: {recommended_movies}")
 
 # Cierre de conexión a la base de datos
 conn.close()

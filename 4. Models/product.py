@@ -53,5 +53,5 @@ def MovieRecommender(movie_name = list(df['movie_title'].value_counts().index)):
     
     return movie_list_name
 
-# Interfaz interactiva
-print(interact(MovieRecommender))
+# # Interfaz interactiva
+# print(interact(MovieRecommender))
